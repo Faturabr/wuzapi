@@ -146,6 +146,13 @@ func (s *server) auth(handler http.HandlerFunc) http.HandlerFunc {
 
 // Create device Whatsapp Servers
 func (s *server) DeviceCreate() http.HandlerFunc {
+	
+	// Defina a estrutura DeviceInfo
+	type DeviceInfo struct {
+		Instance   string `json:"instance"`
+		InstanceId string `json:"instanceId"`
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		instance := r.URL.Query().Get("instance")
 		instanceID := r.URL.Query().Get("instanceId")
