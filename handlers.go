@@ -189,18 +189,12 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 			return
 		}
 
-		// Cria uma resposta JSON
-		response := Response{
-			Message: "Dados inseridos com sucesso",
-			Success: true,
-		}
-
 		// Define o cabeçalho Content-Type como application/json
 		w.Header().Set("Content-Type", "application/json")
 
 		// Escreve a resposta JSON
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(response)
+		w.Write(jsonData)
 	}
 }
 
