@@ -145,6 +145,19 @@ func (s *server) auth(handler http.HandlerFunc) http.HandlerFunc {
 }
 
 // Connects to Whatsapp Servers
+func (s *server) DeviceCreate() http.HandlerFunc {
+
+	type connectStruct struct {
+		Instance []string
+		InstanceId []string
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+			return 'ola'
+		}
+	}
+}
+// Connects to Whatsapp Servers
 func (s *server) Connect() http.HandlerFunc {
 
 	type connectStruct struct {
