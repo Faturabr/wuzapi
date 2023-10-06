@@ -147,20 +147,47 @@ func (s *server) auth(handler http.HandlerFunc) http.HandlerFunc {
 // Create device Whatsapp Servers
 func (s *server) DeviceCreate() http.HandlerFunc {
 
-	type connectStruct struct {
-		Instance   []string
-		InstanceId []string
+	instance := r.URL.Query().Get("instance")
+	instanceID := r.URL.Query().Get("instanceId")
+
+	if instance == "" || instanceID == "" {
+		http.Error(w, "Os parâmetros 'instance' e 'instanceId' são obrigatórios", http.StatusBadRequest)
+		return
 	}
 
-	return func(w http.ResponseWriter, r *http.Request) {
-
-		instance := r.URL.Query().Get("instance")
-        instanceId := r.URL.Query().Get("instanceId")
-
-        fmt.Printf("instance: %s, instanceId: %s\n", instance, instanceId)
-
-		// fmt.Fprint(w, "ola") // Escreva "ola" como resposta
+	deviceInfo := DeviceInfo{
+		Instance:   instance,
+		InstanceId: instanceID,
 	}
+	
+	// Converte a estrutura DeviceInfo em JSON
+	jsonData, err := json.Marshal(deviceInfo)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Define o cabeçalho Content-Type como application/json
+	w.Header().Set("Content-Type", "application/json")
+
+	// Escreve a resposta JSON
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonData)
+
+	// type connectStruct struct {
+	// 	Instance   []string
+	// 	InstanceId []string
+	// }
+
+	// return func(w http.ResponseWriter, r *http.Request) {
+
+	// 	instance := r.URL.Query().Get("instance")
+    //     instanceId := r.URL.Query().Get("instanceId")
+
+    //     fmt.Printf("instance: %s, instanceId: %s\n", instance, instanceId)
+
+	// 	// fmt.Fprint(w, "ola") // Escreva "ola" como resposta
+	// }
 }
 
 // Connects to Whatsapp Servers
