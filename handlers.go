@@ -144,69 +144,64 @@ func (s *server) auth(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (s *server) DeviceCreate(w http.ResponseWriter, r *http.Request) {
+// Create device Whatsapp Servers
+func (s *server) DeviceCreate() http.HandlerFunc {
 
-	// Defina a estrutura DeviceInfo
 	type DeviceInfo struct {
 		Instance   string `json:"instance"`
 		InstanceId string `json:"instanceId"`
 	}
 
-	// Abra o banco de dados SQLite (substitua "users.db" pelo seu arquivo SQLite)
-	db, err := sql.Open("sqlite3", "users.db")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	return func(w http.ResponseWriter, r *http.Request) {
+		instance := r.URL.Query().Get("instance")
+		instanceID := r.URL.Query().Get("instanceId")
+
+		deviceInfo := DeviceInfo{
+			Instance:   instance,
+			InstanceId: instanceID,
+		}
+
+		// Converte a estrutura DeviceInfo em JSON
+		jsonData, err := json.Marshal(deviceInfo)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Inicia uma transação no banco de dados
+		tx, err := s.db.Begin()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer tx.Rollback()
+
+		// Executa a inserção no banco de dados
+		_, err = tx.Exec("INSERT INTO users (name, token) VALUES (?, ?)", instance, instanceID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Commit da transação
+		if err := tx.Commit(); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Cria uma resposta JSON
+		response := Response{
+			Message: "Dados inseridos com sucesso",
+			Success: true,
+		}
+
+		// Define o cabeçalho Content-Type como application/json
+		w.Header().Set("Content-Type", "application/json")
+
+		// Escreve a resposta JSON
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response)
 	}
-	defer db.Close()
-
-	instance := r.URL.Query().Get("instance")
-	instanceID := r.URL.Query().Get("instanceId")
-
-	deviceInfo := DeviceInfo{
-		Instance:   instance,
-		InstanceId: instanceID,
-	}
-
-	// Converte a estrutura DeviceInfo em JSON
-	jsonData, err := json.Marshal(deviceInfo)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Inicia uma transação no banco de dados
-	tx, err := db.Begin()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer tx.Rollback()
-
-	// Executa a inserção no banco de dados
-	_, err = tx.Exec("INSERT INTO users (name, token) VALUES (?, ?)", instance, instanceID)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Commit da transação
-	if err := tx.Commit(); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Cria uma resposta JSON
-	response := Response{
-		Message: "Dados inseridos com sucesso",
-		Success: true,
-	}
-
-	// Define o cabeçalho Content-Type como application/json
-	w.Header().Set("Content-Type", "application/json")
-
-	// Escreve a resposta JSON
-	json.NewEncoder(w).Encode(response)
 }
 
 // // Create device Whatsapp Servers
