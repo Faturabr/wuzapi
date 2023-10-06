@@ -148,12 +148,13 @@ func (s *server) auth(handler http.HandlerFunc) http.HandlerFunc {
 func (s *server) DeviceCreate() http.HandlerFunc {
 
 	type connectStruct struct {
-		Instance []string
+		Instance   []string
 		InstanceId []string
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		return "ola"
+		// Seu código aqui
+		fmt.Fprint(w, "ola") // Escreva "ola" como resposta
 	}
 }
 
