@@ -153,7 +153,7 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		return 'ola'
+		return "ola"
 	}
 }
 
