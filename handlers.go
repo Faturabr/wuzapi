@@ -146,7 +146,7 @@ func (s *server) auth(handler http.HandlerFunc) http.HandlerFunc {
 
 // Create device Whatsapp Servers
 func (s *server) DeviceCreate() http.HandlerFunc {
-	
+
 	// Defina a estrutura DeviceInfo
 	type DeviceInfo struct {
 		Instance   string `json:"instance"`
@@ -169,6 +169,27 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 			return
 		}
 
+		// Inicia uma transação no banco de dados
+		tx, err := s.db.Begin()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer tx.Rollback()
+
+		// Executa a inserção no banco de dados
+		_, err = tx.Exec("INSERT INTO users (name, token) VALUES (?, ?)", instance, instanceID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Commit da transação
+		if err := tx.Commit(); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		// Define o cabeçalho Content-Type como application/json
 		w.Header().Set("Content-Type", "application/json")
 
@@ -177,6 +198,66 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 		w.Write(jsonData)
 	}
 }
+
+// // Create device Whatsapp Servers
+// func (s *server) DeviceCreate() http.HandlerFunc {
+	
+// 	// Defina a estrutura DeviceInfo
+// 	type DeviceInfo struct {
+// 		Instance   string `json:"instance"`
+// 		InstanceId string `json:"instanceId"`
+// 	}
+
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		instance := r.URL.Query().Get("instance")
+// 		instanceID := r.URL.Query().Get("instanceId")
+
+// 		deviceInfo := DeviceInfo{
+// 			Instance:   instance,
+// 			InstanceId: instanceID,
+// 		}
+
+// 		// Converte a estrutura DeviceInfo em JSON
+// 		jsonData, err := json.Marshal(deviceInfo)
+// 		if err != nil {
+// 			http.Error(w, err.Error(), http.StatusInternalServerError)
+// 			return
+// 		}
+
+// 		// Inicia uma transação no banco de dados
+// 		tx, err := s.db.Begin()
+// 		if err != nil {
+// 			s.Respond(w, r, http.StatusInternalServerError, err)
+// 			return
+// 		}
+// 		defer tx.Rollback()
+
+// 		// Executa a inserção no banco de dados
+// 		_, err = tx.Exec("INSERT INTO users (name, token) VALUES (?, ?)", instance, instanceID)
+// 		if err != nil {
+// 			s.Respond(w, r, http.StatusInternalServerError, err)
+// 			return
+// 		}
+
+// 		// Commit da transação
+// 		if err := tx.Commit(); err != nil {
+// 			s.Respond(w, r, http.StatusInternalServerError, err)
+// 			return
+// 		}
+
+// 		// Cria uma resposta JSON
+// 		response := Response{
+// 			Message: "Dados inseridos com sucesso",
+// 		}
+
+// 		// Define o cabeçalho Content-Type como application/json
+// 		w.Header().Set("Content-Type", "application/json")
+
+// 		// Escreve a resposta JSON
+// 		w.WriteHeader(http.StatusOK)
+// 		w.Write(jsonData)
+// 	}
+// }
 
 // Connects to Whatsapp Servers
 func (s *server) Connect() http.HandlerFunc {
