@@ -152,6 +152,11 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 		InstanceId string `json:"instanceId"`
 	}
 
+	type Response struct {
+		Success bool   `json:"success"`
+		Message string `json:"message"`
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		instance := r.URL.Query().Get("instance")
 		instanceID := r.URL.Query().Get("instanceId")
@@ -159,13 +164,6 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 		deviceInfo := DeviceInfo{
 			Instance:   instance,
 			InstanceId: instanceID,
-		}
-
-		// Converte a estrutura DeviceInfo em JSON
-		jsonData, err := json.Marshal(deviceInfo)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
 		}
 
 		// Inicia uma transação no banco de dados
@@ -189,6 +187,19 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 			return
 		}
 
+		// Cria uma resposta JSON
+		response := Response{
+			Success: true,
+			Message: "Dados inseridos com sucesso",
+		}
+
+		// Converte a estrutura Response em JSON
+		jsonData, err := json.Marshal(response)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		// Define o cabeçalho Content-Type como application/json
 		w.Header().Set("Content-Type", "application/json")
 
@@ -197,6 +208,7 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 		w.Write(jsonData)
 	}
 }
+
 
 // // Create device Whatsapp Servers
 // func (s *server) DeviceCreate() http.HandlerFunc {
