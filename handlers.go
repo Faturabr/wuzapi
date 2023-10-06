@@ -153,8 +153,16 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Seu código aqui
-		fmt.Fprint(w, "ola") // Escreva "ola" como resposta
+
+		instance := r.URL.Query().Get("instance")
+        instanceId := r.URL.Query().Get("instanceId")
+
+        instance := connectData.Instance
+        instanceId := connectData.InstanceId
+
+        fmt.Printf("instance: %s, instanceId: %s\n", instance, instanceId)
+
+		// fmt.Fprint(w, "ola") // Escreva "ola" como resposta
 	}
 }
 
