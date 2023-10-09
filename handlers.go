@@ -149,7 +149,7 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 
 	type Response struct {
 		Success bool   `json:"success"`
-		Data    string `json:"name"`  // Mantido como "name"
+		Data    string `json:"data"`  // Mantido como "name"
 		Message string `json:"message"`
 	}
 
@@ -181,7 +181,7 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 		// Cria uma resposta JSON
 		response := Response{
 			Success: true,
-			Data:    name,  // Atualizado para refletir "name"
+			Data:    name,
 			Message: "Dados inseridos com sucesso",
 		}
 
