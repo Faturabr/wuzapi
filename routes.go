@@ -89,7 +89,7 @@ func (s *server) routes() {
 
 	//new route
 	// s.router.Handle("/device/create:name/:token", c.Then(s.DeviceCreate())).Methods("POST")
-	s.router.Handle("/device/create/{name}/{token}", c.Then(s.DeviceCreate())).Methods("POST")
+	s.router.Handle("/device/create", c.Then(s.DeviceCreate())).Methods("POST")
 
 	s.router.PathPrefix("/").Handler(http.FileServer(http.Dir(exPath+"/static/")))
 }
