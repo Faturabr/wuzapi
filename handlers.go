@@ -149,6 +149,7 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 
 	type Response struct {
 		Success bool   `json:"success"`
+		Data    string `json:"name"`  // Mantido como "name"
 		Message string `json:"message"`
 	}
 
@@ -180,6 +181,7 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 		// Cria uma resposta JSON
 		response := Response{
 			Success: true,
+			Data:    name,  // Atualizado para refletir "name"
 			Message: "Dados inseridos com sucesso",
 		}
 
@@ -200,55 +202,51 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 }
 
 
-// // Create device Whatsapp Servers
 // func (s *server) DeviceCreate() http.HandlerFunc {
-	
-// 	// Defina a estrutura DeviceInfo
-// 	type DeviceInfo struct {
-// 		Instance   string `json:"instance"`
-// 		InstanceId string `json:"instanceId"`
+
+// 	type Response struct {
+// 		Success bool   `json:"success"`
+// 		Data string `json:"name"` 
+// 		Message string `json:"message"`
 // 	}
 
 // 	return func(w http.ResponseWriter, r *http.Request) {
-// 		instance := r.URL.Query().Get("instance")
-// 		instanceID := r.URL.Query().Get("instanceId")
-
-// 		deviceInfo := DeviceInfo{
-// 			Instance:   instance,
-// 			InstanceId: instanceID,
-// 		}
-
-// 		// Converte a estrutura DeviceInfo em JSON
-// 		jsonData, err := json.Marshal(deviceInfo)
-// 		if err != nil {
-// 			http.Error(w, err.Error(), http.StatusInternalServerError)
-// 			return
-// 		}
+// 		name := r.URL.Query().Get("name")
+// 		token := r.URL.Query().Get("token")
 
 // 		// Inicia uma transação no banco de dados
 // 		tx, err := s.db.Begin()
 // 		if err != nil {
-// 			s.Respond(w, r, http.StatusInternalServerError, err)
+// 			http.Error(w, err.Error(), http.StatusInternalServerError)
 // 			return
 // 		}
 // 		defer tx.Rollback()
 
 // 		// Executa a inserção no banco de dados
-// 		_, err = tx.Exec("INSERT INTO users (name, token) VALUES (?, ?)", instance, instanceID)
+// 		_, err = tx.Exec("INSERT INTO users (name, token) VALUES (?, ?)", name, token)
 // 		if err != nil {
-// 			s.Respond(w, r, http.StatusInternalServerError, err)
+// 			http.Error(w, err.Error(), http.StatusInternalServerError)
 // 			return
 // 		}
 
 // 		// Commit da transação
 // 		if err := tx.Commit(); err != nil {
-// 			s.Respond(w, r, http.StatusInternalServerError, err)
+// 			http.Error(w, err.Error(), http.StatusInternalServerError)
 // 			return
 // 		}
 
 // 		// Cria uma resposta JSON
 // 		response := Response{
+// 			Success: true,
+// 			Data: name,
 // 			Message: "Dados inseridos com sucesso",
+// 		}
+
+// 		// Converte a estrutura Response em JSON
+// 		jsonData, err := json.Marshal(response)
+// 		if err != nil {
+// 			http.Error(w, err.Error(), http.StatusInternalServerError)
+// 			return
 // 		}
 
 // 		// Define o cabeçalho Content-Type como application/json
