@@ -153,8 +153,8 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		instance := r.URL.Query().Get("instance")
-		instanceID := r.URL.Query().Get("instanceId")
+		name := r.URL.Query().Get("name")
+		token := r.URL.Query().Get("token")
 
 		// Inicia uma transação no banco de dados
 		tx, err := s.db.Begin()
@@ -165,7 +165,7 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 		defer tx.Rollback()
 
 		// Executa a inserção no banco de dados
-		_, err = tx.Exec("INSERT INTO users (name, token) VALUES (?, ?)", instance, instanceID)
+		_, err = tx.Exec("INSERT INTO users (name, token) VALUES (?, ?)", name, token)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
