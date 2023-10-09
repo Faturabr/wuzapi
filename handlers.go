@@ -148,9 +148,9 @@ func (s *server) auth(handler http.HandlerFunc) http.HandlerFunc {
 func (s *server) DeviceCreate() http.HandlerFunc {
 
 	type Response struct {
-		Success bool   `json:"success"`
-		Data    string `json:"data"`  // Mantido como "name"
-		Message string `json:"message"`
+		Success bool              `json:"success"`
+		Data    map[string]string `json:"data"`     // Agora é um mapa
+		Message string            `json:"message"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -181,7 +181,9 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 		// Cria uma resposta JSON
 		response := Response{
 			Success: true,
-			Data:    name,
+			Data: map[string]string{
+				"name": name, // Aqui você pode incluir outros campos, se necessário
+			},
 			Message: "Dados inseridos com sucesso",
 		}
 
@@ -200,6 +202,7 @@ func (s *server) DeviceCreate() http.HandlerFunc {
 		w.Write(jsonData)
 	}
 }
+
 
 
 // func (s *server) DeviceCreate() http.HandlerFunc {
